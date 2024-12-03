@@ -22,11 +22,21 @@ const resolvers = {
             const token = signToken(user);
             return {token, user}
         },
-        login: async(parent, {email, password})=> {
-            const user = await User.findOne({email})
+        login: async (parent, { email, password }) => {
+            const user = await User.findOne({ email });
+        
+            if (!user) {
+                throw new Error('No user found with this email address');
+            }
+        
             const correctPw = await user.isCorrectPassword(password);
+        
+            if (!correctPw) {
+                throw new Error('Incorrect password');
+            }
+        
             const token = signToken(user);
-            return {token, user}
+            return { token, user };
         },
         saveBook: async(parent,{ book }, context )=> {
             console.log('Context: ',context.user._id)   
